@@ -1,0 +1,6 @@
+[
+  {
+    "name": "my-cicd-container",
+    "imageUri": "618046392963.dkr.ecr.us-east-2.amazonaws.com/my-cicd-app:latest"
+  }
+]
