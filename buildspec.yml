@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION: us-east-2
+    ECR_REPO_URI: 618046392963.dkr.ecr.us-east-2.amazonaws.com/my-cicd-app
+
 phases:
   install:
     runtime-versions:
@@ -12,12 +17,18 @@ phases:
     commands:
       - echo "Running tests..."
       - pytest test_app.py -v
+      - echo "Logging into ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
 
   build:
     commands:
-      - echo "Build successful!"
-      - echo "App is ready to be packaged"
+      - echo "Building Docker image..."
+      - docker build -t $ECR_REPO_URI:latest .
+      - docker tag $ECR_REPO_URI:latest $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
 
   post_build:
     commands:
-      - echo "All done. Build completed on $(date)"
+      - echo "Pushing image to ECR..."
+      - docker push $ECR_REPO_URI:latest
+      - docker push $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "Build completed on $(date)"
