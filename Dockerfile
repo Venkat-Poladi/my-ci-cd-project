@@ -9,7 +9,7 @@ COPY app.py .
 COPY test_app.py .
 
 # Install pytest (for running tests inside container)
-RUN pip install pytest
+RUN pip install pytest flask
 
 # Tell Docker what to run when the container starts
 CMD ["python", "app.py"]
